@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -21,4 +21,5 @@ jobs:
           CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
         run: |
           git remote add mirror https://${CNB_USERNAME}:${CNB_TOKEN}@cnb.cool/vvllm/comfyui-api
-          git push --mirror mirror
+          git push --force mirror --all
+          git push --force mirror --tags
