@@ -1,4 +1,4 @@
-# SenseNova U1.5 ComfyUI API Docker Demo
+# SenseNova U1.5 ComfyUI API Docker 
 
 这是一个最小化 Demo，用一个容器同时运行 ComfyUI 和 Comfyui2api。
 
