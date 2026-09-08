@@ -31,20 +31,20 @@ Compose 只会把这个目录只读挂载到容器的 `/models`。启动脚本�
 要求：Docker、Docker Compose、NVIDIA Container Toolkit，以及一张可用的 NVIDIA GPU。
 
 ```bash
-docker compose up --build
+docker compose up -d
 ```
 
 如需为 API 设置访问令牌：
 
 ```bash
-SENSENOVA_API_TOKEN=your-token docker compose up --build
+SENSENOVA_API_TOKEN=your-token docker compose up -d
 ```
 
 Windows PowerShell：
 
 ```powershell
 $env:SENSENOVA_API_TOKEN = "your-token"
-docker compose up --build
+docker compose up -d
 ```
 
 启动后：
