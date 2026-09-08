@@ -1,6 +1,4 @@
 # Large model weights and generated/runtime data
-SenseNova-U1.5-8B-MoT-T8/
-SenseNova-U1.5-8B-MoT-T8-int8/
 *.safetensors
 *.ckpt
 *.pt
@@ -11,3 +9,4 @@ SenseNova-U1.5-8B-MoT-T8-int8/
 *.pyc
 *.log
 .env
+/models

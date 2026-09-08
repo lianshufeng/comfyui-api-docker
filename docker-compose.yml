@@ -22,7 +22,7 @@ services:
       - "127.0.0.1:8188:8188"
       - "127.0.0.1:8460:8460"
     volumes:
-      - ./SenseNova-U1.5-8B-MoT-T8-int8:/models:ro
+      - ./models/SenseNova-U1.5-8B-MoT-T8-int8:/models:ro
     shm_size: "8gb"
     deploy:
       resources:

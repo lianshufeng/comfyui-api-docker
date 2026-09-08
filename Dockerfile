@@ -21,7 +21,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 ARG COMFYUI_VERSION=v0.34.0
 RUN --mount=type=cache,target=/root/.cache/uv \
-    git clone --branch "${COMFYUI_VERSION}" --depth 1 https://github.com/Comfy-Org/ComfyUI.git /opt/ComfyUI \
+    for attempt in 1 2 3 4 5; do \
+        git clone --branch "${COMFYUI_VERSION}" --depth 1 https://github.com/Comfy-Org/ComfyUI.git /opt/ComfyUI && break; \
+        rm -rf /opt/ComfyUI; \
+        if [ "${attempt}" -eq 5 ]; then exit 1; fi; \
+        sleep "$((attempt * 5))"; \
+    done \
     && uv pip install --python /opt/venv/bin/python -r /opt/ComfyUI/requirements.txt \
     && rm -rf /opt/ComfyUI/.git
 
@@ -31,7 +36,12 @@ LABEL org.opencontainers.image.sensenova-node-version="${SENSENOVA_NODES_VERSION
 
 ARG COMFYUI2API_VERSION=v0.0.0-action-test-20260530-0323876
 RUN --mount=type=cache,target=/root/.cache/uv \
-    git clone --branch "${COMFYUI2API_VERSION}" --depth 1 https://github.com/Einzieg/Comfyui2api.git /opt/comfyui2api \
+    for attempt in 1 2 3 4 5; do \
+        git clone --branch "${COMFYUI2API_VERSION}" --depth 1 https://github.com/Einzieg/Comfyui2api.git /opt/comfyui2api && break; \
+        rm -rf /opt/comfyui2api; \
+        if [ "${attempt}" -eq 5 ]; then exit 1; fi; \
+        sleep "$((attempt * 5))"; \
+    done \
     && uv pip install --python /opt/venv/bin/python /opt/comfyui2api \
     && rm -rf /opt/comfyui2api/.git
 

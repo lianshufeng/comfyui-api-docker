@@ -19,5 +19,5 @@ jobs:
           CNB_USERNAME: ${{ secrets.CNB_USERNAME }}
           CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
         run: |
-          git remote add mirror "https://${CNB_USERNAME}:${CNB_TOKEN}@cnb.cool/vvllm/comfyui-api-docker"
+          git remote add mirror "https://${CNB_USERNAME}:${CNB_TOKEN}@cnb.cool/vvllm/comfyui-api"
           git push --mirror mirror
