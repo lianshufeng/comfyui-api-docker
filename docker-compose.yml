@@ -1,0 +1,44 @@
+name: sensenova-u15-unified
+
+services:
+  sensenova:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PYTHON_VERSION: "3.12.11"
+        PYTORCH_VERSION: "2.8.0"
+        TORCHVISION_VERSION: "0.23.0"
+        TORCHAUDIO_VERSION: "2.8.0"
+        COMFYUI_VERSION: "v0.34.0"
+        COMFYUI2API_VERSION: "v0.0.0-action-test-20260530-0323876"
+        SENSENOVA_NODES_VERSION: "1.3.1-int8-local"
+    image: sensenova-u15-unified:latest
+    environment:
+      SENSENOVA_API_TOKEN: "${SENSENOVA_API_TOKEN:-}"
+      CLI_ARGS: "--disable-xformers --disable-pinned-memory"
+      PYTORCH_ALLOC_CONF: "expandable_segments:True"
+    ports:
+      - "127.0.0.1:8188:8188"
+      - "127.0.0.1:8460:8460"
+    volumes:
+      - ./SenseNova-U1.5-8B-MoT-T8-int8:/models:ro
+    shm_size: "8gb"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test:
+        - CMD
+        - /opt/venv/bin/python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8460/health', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    restart: unless-stopped

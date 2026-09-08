@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "kind": "txt2img",
+  "prompt_node": "3.text",
+  "negative_prompt_node": "4.text",
+  "parameters": {
+    "size": {
+      "type": "size",
+      "maps": [
+        {"target": "5.width", "part": "width"},
+        {"target": "5.height", "part": "height"}
+      ]
+    },
+    "seed": {"type": "int", "maps": [{"target": "6.seed"}]},
+    "steps": {"type": "int", "maps": [{"target": "6.steps"}]},
+    "cfg": {"type": "float", "maps": [{"target": "6.cfg"}]}
+  }
+}

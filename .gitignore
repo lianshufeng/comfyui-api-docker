@@ -1,0 +1,13 @@
+# Large model weights and generated/runtime data
+SenseNova-U1.5-8B-MoT-T8/
+SenseNova-U1.5-8B-MoT-T8-int8/
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+
+# Local/runtime files
+**/__pycache__/
+*.pyc
+*.log
+.env

@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "kind": "img2img",
+  "prompt_node": "4.text",
+  "negative_prompt_node": "5.text",
+  "image_node": "3.image",
+  "parameters": {
+    "size": {
+      "type": "size",
+      "maps": [
+        {"target": "7.width", "part": "width"},
+        {"target": "7.height", "part": "height"}
+      ]
+    },
+    "seed": {"type": "int", "maps": [{"target": "8.seed"}]},
+    "steps": {"type": "int", "maps": [{"target": "8.steps"}]},
+    "cfg": {"type": "float", "maps": [{"target": "8.cfg"}]}
+  }
+}

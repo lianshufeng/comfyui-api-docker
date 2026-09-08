@@ -1,0 +1,10 @@
+{
+  "1": {"class_type": "SenseNovaU15Loader", "inputs": {"model_name": "SenseNovaU1.5/SenseNova-U1.5-8B-MoT-T8-int8-convrot-tagged.safetensors"}},
+  "2": {"class_type": "SenseNovaSamplingOptions", "inputs": {"model": ["1", 0], "shift": 3.0}},
+  "3": {"class_type": "CLIPTextEncode", "inputs": {"clip": ["1", 1], "text": "电影感画面，一只红狐狸站在日出时分的雪地森林中，毛发细节清晰，自然色彩，柔和光线"}},
+  "4": {"class_type": "CLIPTextEncode", "inputs": {"clip": ["1", 1], "text": ""}},
+  "5": {"class_type": "EmptySenseNovaLatentImage", "inputs": {"width": 1024, "height": 1024, "batch_size": 1}},
+  "6": {"class_type": "KSampler", "inputs": {"model": ["2", 0], "positive": ["3", 0], "negative": ["4", 0], "latent_image": ["5", 0], "seed": 42, "steps": 50, "cfg": 4.0, "sampler_name": "euler", "scheduler": "normal", "denoise": 1.0}},
+  "7": {"class_type": "VAEDecode", "inputs": {"samples": ["6", 0], "vae": ["1", 2]}},
+  "8": {"class_type": "SaveImage", "inputs": {"images": ["7", 0], "filename_prefix": "SenseNova/api-t2i"}}
+}

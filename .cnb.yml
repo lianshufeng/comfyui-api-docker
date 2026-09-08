@@ -1,0 +1,46 @@
+master:
+  push:
+    - name: docker-build-and-push-amd64
+
+      services:
+        - docker
+
+      docker:
+        image: docker:24-git
+
+      stages:
+        - name: Build and push SenseNova Demo (amd64)
+          script: |
+            set -euo pipefail
+
+            : "${CNB_DOCKER_REGISTRY:?CNB_DOCKER_REGISTRY is required}"
+            : "${CNB_REPO_SLUG_LOWERCASE:?CNB_REPO_SLUG_LOWERCASE is required}"
+            : "${CNB_TOKEN:?CNB_TOKEN is required}"
+
+            REGISTRY_IMAGE="${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}"
+            IMAGE_LATEST="${REGISTRY_IMAGE}:latest"
+            IMAGE_AMD64="${REGISTRY_IMAGE}:amd64"
+
+            printf '%s' "${CNB_TOKEN}" |
+              docker login \
+                "${CNB_DOCKER_REGISTRY}" \
+                --username "${CNB_TOKEN_USER_NAME:-cnb}" \
+                --password-stdin
+
+            export DOCKER_BUILDKIT=1
+            export BUILDKIT_PROGRESS=plain
+
+            docker build \
+              --pull \
+              --platform linux/amd64 \
+              --progress=plain \
+              --tag "${IMAGE_LATEST}" \
+              --tag "${IMAGE_AMD64}" \
+              --file Dockerfile \
+              .
+
+            docker push "${IMAGE_LATEST}"
+            docker push "${IMAGE_AMD64}"
+
+            echo "docker pull ${IMAGE_LATEST}"
+            echo "docker pull ${IMAGE_AMD64}"
