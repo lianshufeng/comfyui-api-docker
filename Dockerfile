@@ -46,8 +46,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     && uv pip install --python /opt/venv/bin/python /opt/comfyui2api \
     && rm -rf /opt/comfyui2api/.git
 
-COPY docker/workflows /opt/ComfyUI/user/default/workflows
-COPY docker/api-workflows /opt/comfyui-api-workflows
+RUN mkdir -p /opt/ComfyUI/user/default/workflows /opt/comfyui-api-workflows
 
 COPY docker/start-unified.sh /usr/local/bin/start-unified.sh
 RUN chmod +x /usr/local/bin/start-unified.sh

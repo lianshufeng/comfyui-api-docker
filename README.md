@@ -6,25 +6,28 @@
 
 ```text
 .
-├── SenseNova-U1.5-8B-MoT-T8-int8/  # 模型文件，不会复制进镜像
+├── models/                         # 模型与工作流，不会复制进镜像
+│   ├── SenseNova-U1.5-8B-MoT-T8-int8/
+│   ├── api-workflows/
+│   └── workflows/
 ├── docker/                          # 镜像构建所需文件，无需修改
 ├── docker-compose.yml
 └── Dockerfile
 ```
 
-用户只需准备模型目录并执行启动命令，不需要修改 `docker/`。输入、输出、用户数据库和 API 运行记录保存在容器内部，不会在项目根目录生成额外目录。
+用户只需准备 `models/` 并执行启动命令，不需要修改 `docker/`。模型和工作流保存在 `models/`；输入、输出、用户数据库和 API 运行记录仍保存在容器内部。
 
 ## 准备模型
 
-在项目根目录创建 `SenseNova-U1.5-8B-MoT-T8-int8`，并放入以下两个文件：
+在项目的 `models/SenseNova-U1.5-8B-MoT-T8-int8` 目录放入以下两个文件：
 
 ```text
-SenseNova-U1.5-8B-MoT-T8-int8/
+models/SenseNova-U1.5-8B-MoT-T8-int8/
 ├── SenseNova-U1.5-8B-MoT-T8-int8-convrot-tagged.safetensors
 └── SenseNova-U1.5-8B-MoT-LoRA-8step-ComfyUI.safetensors
 ```
 
-Compose 只会把这个目录只读挂载到容器的 `/models`。启动脚本会自动把两个模型映射到 ComfyUI 所需的位置。
+将 `sensenova_t2i.json` 和 `sensenova_edit.json` 放在 `models/api-workflows/`，网页工作流放在 `models/workflows/`。Compose 会挂载这些目录；镜像不再内置模型专属工作流。启动脚本会自动把 SenseNova 模型映射到 ComfyUI 所需的位置。
 
 ## 启动
 
