@@ -3,6 +3,7 @@ name: sensenova-u15-unified
 services:
   sensenova:
     image: docker.cnb.cool/vvllm/comfyui-api:latest
+    command: ["/usr/local/bin/start-unified.sh"]
     environment:
       DEBUG: true
       CUDA_VISIBLE_DEVICES: 1 # 多卡 0,1
@@ -14,6 +15,42 @@ services:
       - "8460:8460"
     volumes:
       - ./models/SenseNova-U1.5-8B-MoT-T8-int8:/models:ro
+    shm_size: "8gb"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test:
+        - CMD
+        - /opt/venv/bin/python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8460/health', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    restart: unless-stopped
+
+  qwen:
+    profiles: [qwen]
+    image: docker.cnb.cool/vvllm/comfyui-api:latest
+    command: ["/usr/local/bin/start-unified.sh"]
+    environment:
+      CUDA_VISIBLE_DEVICES: 1
+      COMFYUI_API_TOKEN: "${COMFYUI_API_TOKEN:-}"
+      CLI_ARGS: "--disable-xformers --disable-pinned-memory"
+      PYTORCH_ALLOC_CONF: "expandable_segments:True"
+    ports:
+      - "8189:8188"
+      - "8461:8460"
+    volumes:
+      - ./models/Qwen-Image-2.1/diffusion_models:/opt/ComfyUI/models/diffusion_models:ro
+      - ./models/Qwen-Image-2.1/text_encoders:/opt/ComfyUI/models/text_encoders:ro
+      - ./models/Qwen-Image-2.1/vae:/opt/ComfyUI/models/vae:ro
     shm_size: "8gb"
     deploy:
       resources:

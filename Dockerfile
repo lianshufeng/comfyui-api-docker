@@ -19,10 +19,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
        "torch==${PYTORCH_VERSION}" "torchvision==${TORCHVISION_VERSION}" "torchaudio==${TORCHAUDIO_VERSION}" \
        --index-url https://download.pytorch.org/whl/cu126
 
-ARG COMFYUI_VERSION=v0.34.0
+ARG COMFYUI_BRANCH=master
 RUN --mount=type=cache,target=/root/.cache/uv \
     for attempt in 1 2 3 4 5; do \
-        git clone --branch "${COMFYUI_VERSION}" --depth 1 https://github.com/Comfy-Org/ComfyUI.git /opt/ComfyUI && break; \
+        git clone --branch "${COMFYUI_BRANCH}" --depth 1 https://github.com/Comfy-Org/ComfyUI.git /opt/ComfyUI && break; \
         rm -rf /opt/ComfyUI; \
         if [ "${attempt}" -eq 5 ]; then exit 1; fi; \
         sleep "$((attempt * 5))"; \

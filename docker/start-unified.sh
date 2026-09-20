@@ -1,28 +1,24 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-model_dir=/models
-model_name=SenseNova-U1.5-8B-MoT-T8-int8-convrot-tagged.safetensors
-lora_name=SenseNova-U1.5-8B-MoT-LoRA-8step-ComfyUI.safetensors
-
-for model_file in "$model_name" "$lora_name"; do
-    if [[ ! -f "$model_dir/$model_file" ]]; then
-        echo "Missing model file: $model_dir/$model_file" >&2
-        exit 1
-    fi
-done
-
 mkdir -p \
     /opt/ComfyUI/input \
     /opt/ComfyUI/output \
     /opt/ComfyUI/user \
-    /opt/ComfyUI/models/diffusion_models/SenseNovaU1.5 \
-    /opt/ComfyUI/models/loras \
     /root/comfyui-api-runs \
     /root/comfyui-api-data
 
-ln -sfn "$model_dir/$model_name" "/opt/ComfyUI/models/diffusion_models/SenseNovaU1.5/$model_name"
-ln -sfn "$model_dir/$lora_name" "/opt/ComfyUI/models/loras/$lora_name"
+if [[ -d /models ]]; then
+    model_name=SenseNova-U1.5-8B-MoT-T8-int8-convrot-tagged.safetensors
+    lora_name=SenseNova-U1.5-8B-MoT-LoRA-8step-ComfyUI.safetensors
+    mkdir -p /opt/ComfyUI/models/diffusion_models/SenseNovaU1.5 /opt/ComfyUI/models/loras
+    if [[ -f "/models/$model_name" ]]; then
+        ln -sfn "/models/$model_name" "/opt/ComfyUI/models/diffusion_models/SenseNovaU1.5/$model_name"
+    fi
+    if [[ -f "/models/$lora_name" ]]; then
+        ln -sfn "/models/$lora_name" "/opt/ComfyUI/models/loras/$lora_name"
+    fi
+fi
 
 /opt/venv/bin/python /opt/ComfyUI/main.py --listen 0.0.0.0 --port 8188 ${CLI_ARGS:-} &
 comfy_pid=$!
@@ -53,7 +49,7 @@ DATA_DIR=/root/comfyui-api-data \
 IMAGE_UPLOAD_MODE=comfy \
 INPUT_SUBDIR=comfyui2api \
 WORKER_CONCURRENCY=1 \
-API_TOKEN="${SENSENOVA_API_TOKEN:-}" \
+API_TOKEN="${COMFYUI_API_TOKEN:-${SENSENOVA_API_TOKEN:-}}" \
 COMFYUI2API_UI_ENABLED=false \
 /opt/venv/bin/python -m comfyui2api serve --disable-ui &
 api_pid=$!
