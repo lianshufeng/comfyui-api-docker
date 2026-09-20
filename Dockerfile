@@ -2,6 +2,7 @@ FROM ghcr.io/astral-sh/uv:0.8.17 AS uv
 FROM nvidia/cuda:12.6.3-base-ubuntu22.04
 
 COPY --from=uv /uv /uvx /usr/local/bin/
+ENV UV_HTTP_TIMEOUT=1800 UV_HTTP_RETRIES=5
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates git libgl1 libglib2.0-0 libgomp1 \
