@@ -2,21 +2,23 @@ name: sensenova-u15-unified
 
 services:
   sensenova:
+    profiles: [sensenova]
     image: docker.cnb.cool/vvllm/comfyui-api:latest
-    command: ["/usr/local/bin/start-unified.sh"]
+    command: ["--model", "SenseNova-U1.5-8B-MoT-T8-int8-convrot-tagged"]
     environment:
       DEBUG: true
-      CUDA_VISIBLE_DEVICES: 1 # 多卡 0,1
       SENSENOVA_API_TOKEN: "${SENSENOVA_API_TOKEN:-}"
-      CLI_ARGS: "--disable-xformers --disable-pinned-memory"
+      # 3060 12GB 无法完整容纳 SenseNova 权重，保持当前低显存配置。
+      # 显存充足时，可注释下一行并启用下面的 --highvram 配置，让首次出图后模型尽量保留在显存。
+      # --highvram 与 --lowvram 不能同时使用；首次请求仍会加载模型，启动容器本身不会预热。
+      CLI_ARGS: "--disable-xformers --disable-pinned-memory --lowvram"
+      # CLI_ARGS: "--disable-xformers --disable-pinned-memory --highvram"
       PYTORCH_ALLOC_CONF: "expandable_segments:True"
     ports:
       - "8188:8188"
       - "8460:8460"
     volumes:
-      - ./models/SenseNova-U1.5-8B-MoT-T8-int8:/models:ro
-      - ./models/api-workflows:/opt/comfyui-api-workflows:ro
-      - ./models/workflows:/opt/ComfyUI/user/default/workflows
+      - ../../huggingface/Comfy-Org/SenseNova-U1.5-8B-MoT-T8:/models:ro
     shm_size: "8gb"
     deploy:
       resources:
@@ -40,21 +42,20 @@ services:
   qwen:
     profiles: [qwen]
     image: docker.cnb.cool/vvllm/comfyui-api:latest
-    command: ["/usr/local/bin/start-unified.sh"]
+    command: ["--model", "qwen_image_2.1_int8_convrot"]
     environment:
-      CUDA_VISIBLE_DEVICES: 1
       COMFYUI_API_TOKEN: "${COMFYUI_API_TOKEN:-}"
-      CLI_ARGS: "--disable-xformers --disable-pinned-memory"
+      # 3060 12GB 无法完整容纳 Qwen 主模型、文本编码器和 VAE，保持当前低显存配置。
+      # 显存充足时，可注释下一行并启用下面的 --highvram 配置，让首次出图后模型尽量保留在显存。
+      # --highvram 与 --lowvram 不能同时使用；首次请求仍会加载模型，启动容器本身不会预热。
+      CLI_ARGS: "--disable-xformers --disable-pinned-memory --lowvram"
+      # CLI_ARGS: "--disable-xformers --disable-pinned-memory --highvram"
       PYTORCH_ALLOC_CONF: "expandable_segments:True"
     ports:
       - "8189:8188"
       - "8461:8460"
     volumes:
-      - ../../huggingface/Comfy-Org/Qwen-Image-2.1/qwen_image_2.1_int8_convrot.safetensors:/opt/ComfyUI/models/diffusion_models/qwen_image_2.1_int8_convrot.safetensors:ro
-      - ../../huggingface/Comfy-Org/Qwen-Image-2.1/qwen3vl_8b_int8_convrot.safetensors:/opt/ComfyUI/models/text_encoders/qwen3vl_8b_int8_convrot.safetensors:ro
-      - ../../huggingface/Comfy-Org/Qwen-Image-2.1/qwen_image_2.1_vae_bf16.safetensors:/opt/ComfyUI/models/vae/qwen_image_2.1_vae_bf16.safetensors:ro
-      - ../../huggingface/Comfy-Org/Qwen-Image-2.1/api-workflows:/opt/comfyui-api-workflows:ro
-      - ../../huggingface/Comfy-Org/Qwen-Image-2.1/output:/opt/ComfyUI/output
+      - ../../huggingface/Comfy-Org/Qwen-Image-2.1:/models:ro
     shm_size: "8gb"
     deploy:
       resources:

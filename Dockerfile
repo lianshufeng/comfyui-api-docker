@@ -4,8 +4,9 @@ FROM nvidia/cuda:12.6.3-base-ubuntu22.04
 COPY --from=uv /uv /uvx /usr/local/bin/
 ENV UV_HTTP_TIMEOUT=1800 UV_HTTP_RETRIES=5
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates git libgl1 libglib2.0-0 libgomp1 \
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g; s|http://security.ubuntu.com/ubuntu|https://security.ubuntu.com/ubuntu|g' /etc/apt/sources.list \
+    && apt-get -o Acquire::Retries=3 update \
+    && apt-get -o Acquire::Retries=3 install -y --no-install-recommends ca-certificates git libgl1 libglib2.0-0 libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 ARG PYTHON_VERSION=3.12.11
@@ -48,8 +49,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 RUN mkdir -p /opt/ComfyUI/user/default/workflows /opt/comfyui-api-workflows
 
+COPY docker/prepare-model.py /usr/local/bin/prepare-model.py
 COPY docker/start-unified.sh /usr/local/bin/start-unified.sh
 RUN chmod +x /usr/local/bin/start-unified.sh
 
 EXPOSE 8188 8460
-CMD ["/usr/local/bin/start-unified.sh"]
+ENTRYPOINT ["/usr/local/bin/start-unified.sh"]

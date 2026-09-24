@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+# Existing AIHub workspace templates pass the script path as the command.
+if [[ "${1:-}" == "/usr/local/bin/start-unified.sh" ]]; then
+    shift
+fi
+
 mkdir -p \
     /opt/ComfyUI/input \
     /opt/ComfyUI/output \
     /opt/ComfyUI/user \
     /root/comfyui-api-runs \
-    /root/comfyui-api-data
+    /root/comfyui-api-data \
+    /root/comfyui-api-workflows
 
 if [[ -d /models ]]; then
     model_name=SenseNova-U1.5-8B-MoT-T8-int8-convrot-tagged.safetensors
@@ -19,6 +25,12 @@ if [[ -d /models ]]; then
         ln -sfn "/models/$lora_name" "/opt/ComfyUI/models/loras/$lora_name"
     fi
 fi
+
+if [[ -d /opt/comfyui-api-workflows ]]; then
+    cp -a /opt/comfyui-api-workflows/. /root/comfyui-api-workflows/
+fi
+
+/opt/venv/bin/python /usr/local/bin/prepare-model.py "$@"
 
 /opt/venv/bin/python /opt/ComfyUI/main.py --listen 0.0.0.0 --port 8188 ${CLI_ARGS:-} &
 comfy_pid=$!
@@ -43,7 +55,7 @@ API_LISTEN=0.0.0.0 \
 API_PORT=8460 \
 COMFYUI_BASE_URL=http://127.0.0.1:8188 \
 COMFYUI_STARTUP_CHECK=true \
-WORKFLOWS_DIR=/opt/comfyui-api-workflows \
+WORKFLOWS_DIR=/root/comfyui-api-workflows \
 RUNS_DIR=/root/comfyui-api-runs \
 DATA_DIR=/root/comfyui-api-data \
 IMAGE_UPLOAD_MODE=comfy \
